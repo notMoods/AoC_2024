@@ -1,22 +1,24 @@
 module AoC_2024.Day03
 
 open System
-let spanCharToInt (span: ReadOnlySpan<char>) : (int64 * bool) = 
-    let mutable acc: int64 = 0
-    let mutable valid = true
 
-    for i in 0..(span.Length - 1) do
-        let char_is_valid = Char.IsNumber span[i]
+module Helper =
+    let spanCharToInt (span: ReadOnlySpan<char>) : (int64 * bool) = 
+        let mutable acc: int64 = 0
+        let mutable valid = true
 
-        if not char_is_valid then 
-            valid <- false
-            acc <- 0
-        elif valid then
-            acc <- (acc * 10L) + (int64)(span[i] - '0')
+        for i in 0..(span.Length - 1) do
+            let char_is_valid = Char.IsNumber span[i]
 
-    (acc, valid)
+            if not char_is_valid then 
+                valid <- false
+                acc <- 0
+            elif valid then
+                acc <- (acc * 10L) + (int64)(span[i] - '0')
 
-let processRestOfSpan (span: ReadOnlySpan<char>) : int64 =
+        (acc, valid)
+
+    let processRestOfSpan (span: ReadOnlySpan<char>) : int64 =
         let index_of_comma = span.IndexOf (',')
         let index_of_bracket = span.IndexOf (')')
 
@@ -46,9 +48,9 @@ let solve (input: string array) : (string * string) =
                 let proc_length = 8
 
                 if start_of_num + proc_length < line.Length then
-                    p1 <- p1 + processRestOfSpan (line.AsSpan (start_of_num, 8))
+                    p1 <- p1 + Helper.processRestOfSpan (line.AsSpan (start_of_num, 8))
                 else 
-                    p1 <- p1 + processRestOfSpan (line.AsSpan(start_of_num))
+                    p1 <- p1 + Helper.processRestOfSpan (line.AsSpan(start_of_num))
 
     let mutable p2: int64 = 0
     let mutable enabled = true 
@@ -72,9 +74,9 @@ let solve (input: string array) : (string * string) =
                 let proc_length = 8
 
                 if start_of_num + proc_length < line.Length then
-                    p2 <- p2 + processRestOfSpan (line.AsSpan (start_of_num, 8))
+                    p2 <- p2 + Helper.processRestOfSpan (line.AsSpan (start_of_num, 8))
                 else 
-                    p2 <- p2 + processRestOfSpan (line.AsSpan(start_of_num))
+                    p2 <- p2 + Helper.processRestOfSpan (line.AsSpan(start_of_num))
 
 
     ($"{p1}", $"{p2}")
