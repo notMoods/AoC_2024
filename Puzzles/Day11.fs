@@ -3,15 +3,11 @@ module AoC_2024.Day11
 open System
 
 module Helper =
-    let solvePart2 (arr: Collections.Generic.Dictionary<int64, int>) : int64 =
-
-
-        65L
-    let rec repeatXTimes (func: 'a -> 'a) (array: 'a)  (repeatCount: int) : 'a =
+    let rec repeatXTimes (func: 'a -> 'a) (value: 'a)  (repeatCount: int) : 'a =
         if repeatCount = 0 then
-            array
+            value
         else
-            repeatXTimes func (func array) (repeatCount - 1) 
+            repeatXTimes func (func value) (repeatCount - 1) 
 
     let getDigitCount (num: int64) : int =
         let mutable length = 0
@@ -36,6 +32,11 @@ module Helper =
             num' <- num' / 10L
 
         res
+
+    let addValueToDict (dict: Collections.Generic.Dictionary<'a, uint64>) (key: 'a) (value) : unit =
+        if dict.ContainsKey key then
+            dict[key] <- dict[key] + value
+        else dict.Add (key, value)
     
 let solve (input: string array) : (string * string) =
     let dict = Collections.Generic.Dictionary<int64, uint64> ()
@@ -46,7 +47,6 @@ let solve (input: string array) : (string * string) =
                     if dict.ContainsKey x then
                         dict[x] <- dict[x] + 1UL
                     else dict.Add (x, 1UL))
-
 
     let solver =
         dict
@@ -60,29 +60,22 @@ let solve (input: string array) : (string * string) =
                                             let x_digit_count = Helper.getDigitCount x
 
                                             if x = 0 then
-                                                if new_dict.ContainsKey 1 then
-                                                    new_dict[1] <- new_dict[1] + x_count
-                                                else new_dict.Add (1, x_count)
+                                                Helper.addValueToDict new_dict 1 x_count
 
                                             elif (x_digit_count % 2 = 0) then
                                                 let first_half = Helper.getSection x (x_digit_count / 2) (x_digit_count - 1)
                                                 let second_half = Helper.getSection x 0 (x_digit_count / 2 - 1)
                                                 
-                                                if new_dict.ContainsKey first_half then
-                                                    new_dict[first_half] <- new_dict[first_half] + x_count
-                                                else new_dict.Add (first_half, x_count)
+                                                Helper.addValueToDict new_dict first_half x_count
+                                                Helper.addValueToDict new_dict second_half x_count
 
-                                                if new_dict.ContainsKey second_half then
-                                                    new_dict[second_half] <- new_dict[second_half] + x_count
-                                                else new_dict.Add (second_half, x_count)
-
-                                            elif new_dict.ContainsKey (x * 2024L) then
-                                                new_dict[x * 2024L] <- new_dict[x * 2024L] + x_count
-                                            else new_dict.Add ((x * 2024L), x_count)
+                                            else Helper.addValueToDict new_dict (x * 2024L) x_count
                                             
                                         new_dict
                                         ) 
 
-    let (part_1, part_2) = (Seq.sumBy (fun (kvp: Collections.Generic.KeyValuePair<int64, uint64>) -> kvp.Value) (solver 25), Seq.sumBy (fun (kvp: Collections.Generic.KeyValuePair<int64, uint64>) -> kvp.Value) (solver 75))
+    let (part_1, part_2) = 
+        (Seq.sumBy (fun (kvp: Collections.Generic.KeyValuePair<int64, uint64>) -> kvp.Value) (solver 25), 
+        Seq.sumBy (fun (kvp: Collections.Generic.KeyValuePair<int64, uint64>) -> kvp.Value) (solver 75))
         
     ($"{part_1}", $"{part_2}")
