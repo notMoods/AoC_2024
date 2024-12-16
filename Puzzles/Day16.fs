@@ -15,6 +15,24 @@ module Helper =
         Pos_X : int
         Pos_Y : int
     }
+
+    let getPoint (point: char) (map: string array) =
+        let (x, y) = 
+            map
+            |> Array.fold (
+                fun (x, y, y_count) str -> 
+                    let index = str.IndexOf point
+                    if index <> -1 then
+                        (index, y_count, y_count + 1)
+                    else (x, y, y_count + 1)
+            ) (0, 0, 0)
+            |> (fun (x, y, _) -> (x, y))
+
+        {
+            Facing = East
+            Pos_X = x
+            Pos_Y = y
+        }
     let getValidPoints point (map: string array) = 
         let forward_point = 
             match point.Facing with
@@ -93,8 +111,6 @@ module Helper =
         let p_queue = PriorityQueue<(Point * Point list), Int64> ()
 
         p_queue.Enqueue ((start_pos, [ start_pos ]), 0)
-        let visited_nodes = HashSet<Point> ()
-
 
         let paths_for_each_node = Dictionary<Point, (Point list) list>()
 
@@ -104,26 +120,20 @@ module Helper =
 
         let unique_nodes = HashSet<int * int>()
 
-
         while p_queue.Count > 0 do
             let (cur_node, cur_path) = p_queue.Dequeue ()
         
             for (node, cost) in (getValidPoints cur_node map) do
-
-                //if not (visited_nodes.Contains node) then
-
                     let new_cost = state_costs[cur_node] + cost
                     let list_of_path = cur_path @ [node]
 
                     let (exists, prev_dist) = state_costs.TryGetValue node
-
 
                     if isGoal node then
                         if new_cost = the_goal then
                             for point in list_of_path do
                                 unique_nodes.Add (point.Pos_X, point.Pos_Y) |> ignore
 
-                            
                         elif new_cost < the_goal then
                             unique_nodes.Clear ()
 
@@ -138,63 +148,34 @@ module Helper =
 
                         p_queue.Enqueue ((node, list_of_path), new_cost)
 
-                        ()
-
                     elif exists && new_cost < prev_dist then
                         state_costs[node] <- new_cost
 
                         paths_for_each_node.Remove (node) |> ignore
 
-                    
                         paths_for_each_node.Add (node, [ list_of_path ])
 
                         p_queue.Enqueue ((node, list_of_path), new_cost)
-                        ()
+                        
                 
                     elif exists && new_cost = prev_dist then
                         paths_for_each_node[node] <- paths_for_each_node[node] @ [ list_of_path ]
                         p_queue.Enqueue ((node, list_of_path), new_cost)
-                        ()
-
-            //visited_nodes.Add (cur_node) |> ignore
-
-        
-        //state_costs: Dictionary<Point, Int64>
-
-        
-
-        // for kvp in paths_for_each_node do
-        //     if kvp.Key.Pos_X = goal_x && kvp.Key.Pos_Y = goal_y && kvp.Key.Facing = North then
-        //         for _list in kvp.Value do
-        //             for point in _list do
-        //                 unique_nodes.Add (point.Pos_X, point.Pos_Y) |> ignore
-               
-
-
+                        
         unique_nodes.Count
 let solve (input: string array) : (string * string) =
-    let reindeer_pos : Helper.Point= {
-        Facing = Helper.East
-        Pos_X = 1
-        Pos_Y = 139
-    }
 
-    let (goal_x, goal_y) = (139, 1)
+    let reindeer_pos = Helper.getPoint 'S' input
+
+    let goal = Helper.getPoint 'E' input
 
     let state_cost = Dictionary<Helper.Point, Int64> ()
     state_cost.Add (reindeer_pos, 0)
 
-    let part_1 = Helper.dijkstra reindeer_pos (goal_x, goal_y) input state_cost
+    let part_1 = Helper.dijkstra reindeer_pos (goal.Pos_X, goal.Pos_Y) input state_cost
 
-    let reindeer_pos_2 : Helper.Point= {
-        Facing = Helper.East
-        Pos_X = 1
-        Pos_Y = 139
-    }
+    state_cost.Clear()
+    state_cost.Add (reindeer_pos, 0)
+    let part_2 = Helper.dijkstraTwo reindeer_pos (goal.Pos_X, goal.Pos_Y) input state_cost
 
-    let state_cost_2 = Dictionary<Helper.Point, Int64> ()
-    state_cost_2.Add (reindeer_pos, 0)
-    let part_2 = Helper.dijkstraTwo reindeer_pos_2 (goal_x, goal_y) input state_cost_2
-
-    
     ($"{part_1}", $"{part_2}")
