@@ -73,7 +73,7 @@ module Helper =
         dfs (node_x, node_y) (region) 
         region
 
-    let floodFillCheck (map: char array array) (bytes: (int * int) array) =
+    let partTwo (map: char array array) (bytes: (int * int) array) =
         
         let mutable (res_x, res_y) = (0, 0)
 
@@ -109,12 +109,10 @@ let solve (input: string array) : (string * string) =
     input[..1023]
     |> Array.iter (
         fun str ->
-            //8,66
             let foo = str.Split (',', StringSplitOptions.RemoveEmptyEntries)
             let x = Int32.Parse foo[0]
             let y = Int32.Parse foo[1]
             map[y][x] <- '#'
-
     )
 
     let part_one = Helper.traverseMap map (0, 0) (70, 70)
@@ -128,7 +126,6 @@ let solve (input: string array) : (string * string) =
                 (Int32.Parse arr[0], Int32.Parse arr[1])
         )
 
-    let (p2_x, p2_y) = Helper.floodFillCheck map more_bytes
-    
-    
+    let (p2_x, p2_y) = Helper.partTwo map more_bytes
+     
     ($"{part_one}", $"{p2_x},{p2_y}")
