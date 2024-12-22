@@ -9,6 +9,7 @@
 input.txt
 testing.fsx
 random.fsx
+example.txt
 
 # User-specific files
 *.rsuser

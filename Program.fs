@@ -10,7 +10,7 @@ let input =
 [<EntryPoint>]
 let main _ =
     
-    let (ans1, ans2) = Day21.solve input
+    let (ans1, ans2) = Day22.solve input
 
     printfn "Part 1: %s Part 2: %s" ans1 ans2
     
