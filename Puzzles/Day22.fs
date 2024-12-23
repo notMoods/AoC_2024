@@ -17,7 +17,6 @@ module Helper =
         else 
             repeatXTimes func (count - 1) (func value)
 
-
     let addChangeAndPrice (dict: Dictionary<(sbyte * sbyte * sbyte * sbyte), sbyte>) 
         (changes: sbyte array) (price: sbyte )=
         let changes = (changes[0], changes[1], changes[2], changes[3])
@@ -25,8 +24,6 @@ module Helper =
         if not (dict.ContainsKey changes) then
             dict.Add (changes, price)
         
-
-    //a dictionary of a 4 byte tuple as key, and a max_cost as value
     let getDictForSequence (num: int64) = 
         let alterChanges (arr: sbyte array) (change: sbyte) =
             for i in 0..2 do
